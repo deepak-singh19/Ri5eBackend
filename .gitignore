@@ -1,0 +1,27 @@
+# Node.js specific
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json (if using npm)
+yarn.lock (if using yarn)
+
+# Environment variables
+.env
+
+# Build output directories
+dist/
+build/
+
+# IDE/editor specific files
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Other temporary or sensitive files
+uploads/ # If you have a directory for user uploads
