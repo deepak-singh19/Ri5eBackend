@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
 const mentorSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
+  fullName: {
     type: String,
     required: true,
   },
@@ -13,6 +9,10 @@ const mentorSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true, 
+  },
+  password: {
+    type: String,
+    required: true,
   },
   address: {
     type: String,
@@ -22,7 +22,7 @@ const mentorSchema = new mongoose.Schema({
   },
   areaOfExpertise: {
     type: [String], // Array of strings for areas of expertise
-    required: true,
+  //  required: true,
   },
   industryExperience: {
     type: [String], // Array of strings for industry experience

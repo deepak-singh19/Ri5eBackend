@@ -6,10 +6,15 @@ require('dotenv').config();
 const app = express();
 
 const PORT = process.env.PORT || 3005;
+const mentorsRoute= require("./routers/mentor");
+
+//middlewares
+app.use(express.json());
 
 // Connect to the database
 connectDB();
 
+app.use("/mentor",mentorsRoute);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
