@@ -45,6 +45,12 @@ const mentorSchema = new mongoose.Schema({
   durationOfMentorship: {
     type: String, 
   },
+  verificationCode:{
+    type:String
+  },
+  isVerified:{
+    type:Boolean
+  }
 });
 
 const Mentor = mongoose.model('Mentor', mentorSchema);
