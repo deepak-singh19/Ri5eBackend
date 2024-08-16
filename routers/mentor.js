@@ -72,4 +72,68 @@ router.post("/sign-in", async (req, res) => {
   }
 });
 
+router.patch("/profile/:mentorId", async (req, res, next) => {
+  try {
+    const mentorId = req.params.mentorId;
+    const updateData = req.body;
+
+    const updatedMentor = await Mentor.findByIdAndUpdate(
+      mentorId,
+      { $set: updateData },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedMentor) {
+      return res.status(404).send({ message: "Mentor not found" });
+    }
+
+    res.status(200).send({ 
+      message: "Mentor profile updated successfully",
+      mentor: updatedMentor 
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: error.message });
+  }
+});
+
+router.put("/update-mentor/:mentorId", async (req, res) => {
+  try {
+    const mentorId = req.params.mentorId;
+    const newData = req.body;
+
+    // Ensure the body contains data for the full update
+    if (!newData || Object.keys(newData).length === 0) {
+      return res.status(400).send({ message: "Full update requires complete data" });
+    }
+
+    // Find the existing mentor to preserve sensitive fields
+    const existingMentor = await Mentor.findById(mentorId);
+    if (!existingMentor) {
+      return res.status(404).send({ message: "Mentor not found" });
+    }
+
+    // Preserve sensitive fields
+    newData.password = existingMentor.password;
+    newData.email= existingMentor.email;
+    newData.isVerified= existingMentor.isVerified;
+    newData.verificationCode= existingMentor.verificationCode;
+
+    // Replace the document with the new data but preserve the password
+    const updatedMentor = await Mentor.findOneAndReplace(
+      { _id: mentorId },
+      newData, // Replace the document with the new data but keep sensitive fields
+      { new: true, overwrite: true, runValidators: true }
+    );
+
+    res.status(200).send({
+      message: "Mentor profile fully replaced successfully",
+      mentor: updatedMentor,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Server error. Please try again." });
+  }
+});
+
 module.exports = router;
