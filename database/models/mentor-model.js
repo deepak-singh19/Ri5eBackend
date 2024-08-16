@@ -50,7 +50,13 @@ const mentorSchema = new mongoose.Schema({
   },
   isVerified:{
     type:Boolean
-  }
+  },
+  address:{
+    type:String
+  },
+  designation:{
+    type:String
+  } 
 });
 
 const Mentor = mongoose.model('Mentor', mentorSchema);
