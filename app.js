@@ -7,6 +7,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3005;
 const mentorsRoute= require("./routers/mentor");
+const productRoute= require("./routers/product");
 
 //middlewares
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/mentor",mentorsRoute);
+app.use("/product",productRoute);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });

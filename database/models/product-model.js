@@ -5,11 +5,11 @@ const productOwnerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  firstName: {
+  fullName: {
     type: String,
     required: true
   },
-  lastName: {
+  password: {
     type: String,
     required: true
   },
