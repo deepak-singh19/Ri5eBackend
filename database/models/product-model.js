@@ -57,6 +57,12 @@ const productOwnerSchema = new mongoose.Schema({
   durationOfMentorship: {
     type: String, 
   },
+  verificationCode:{
+    type:String
+  },
+  isVerified:{
+    type:Boolean
+  }
 });
 
 const ProductOwner = mongoose.model('ProductOwner', productOwnerSchema);
