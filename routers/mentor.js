@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const MMiddleware=require("../middleware/mentor-auth-middleware");
 const Mentor = require("../database/models/mentor-model");
 const bcrypt = require('bcrypt');
 const { generateVerificationCode, sendVerificationEmail } = require("../lib/common");
@@ -165,5 +165,9 @@ router.get("/mentor-profile/:mentorId",async(req,res)=>{
   }
 })
 
+router.get("/abcd",MMiddleware,(req,res)=>{
+  const email=req.email;
+  res.send(email);
+})
 
 module.exports = router;

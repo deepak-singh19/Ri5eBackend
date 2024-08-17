@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductOwner = require("../database/models/product-model");
+const PMiddleware=require("../middleware/mentor-auth-middleware");
 const bcrypt = require('bcrypt');
 const { generateVerificationCode, sendVerificationEmail } = require("../lib/common");
 
@@ -161,6 +162,10 @@ router.get("/product-profile/:productOwnerId",async(req,res)=>{
         console.error(error);
         res.send(500).send({error:"Server error. Please try again."});
     }
+})
+router.get("/abcd",PMiddleware,(req,res)=>{
+  const email=req.email;
+  res.send(email);
 })
 
 module.exports = router;
