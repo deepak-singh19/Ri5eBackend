@@ -135,5 +135,35 @@ router.put("/update-mentor/:mentorId", async (req, res) => {
     res.status(500).send({ error: "Server error. Please try again." });
   }
 });
+router.get("/all-mentors",async(req,res)=>{
+  try{
+      const mentors= await Mentor.find();
+      res.status(200).send({
+          message:"All mentors",
+          mentors:mentors
+      })
+  }catch(error){
+      console.error(error);
+      res.send(500).send({error:"Server error. Please try again."});
+  }
+})
+
+router.get("/mentor-profile/:mentorId",async(req,res)=>{
+  try{
+      const mentorId = req.params.mentorId;
+      const existingMentor = await Mentor.findById(mentorId);
+      if (!existingMentor) {
+    return res.status(404).send({ message: "Product Owner not found" });
+      } 
+      res.status(200).send({
+          message:"Mentor",
+          product:existingMentor
+      })
+  }catch(error){
+      console.error(error);
+      res.send(500).send({error:"Server error. Please try again."});
+  }
+})
+
 
 module.exports = router;

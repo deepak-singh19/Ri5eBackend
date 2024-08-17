@@ -134,4 +134,34 @@ router.put("/update-product-owner/:productOwnerId", async (req, res) => {
   }
 });
 
+router.get("/all-products",async(req,res)=>{
+    try{
+        const products= await ProductOwner.find();
+        res.status(200).send({
+            message:"All Product Owners",
+            products:products
+        })
+    }catch(error){
+        console.error(error);
+        res.send(500).send({error:"Server error. Please try again."});
+    }
+})
+
+router.get("/product-profile/:productOwnerId",async(req,res)=>{
+    try{
+        const productOwnerId = req.params.productOwnerId;
+        const existingProductOwner = await ProductOwner.findById(productOwnerId);
+        if (!existingProductOwner) {
+      return res.status(404).send({ message: "Product Owner not found" });
+        } 
+        res.status(200).send({
+            message:"Product Owner",
+            product:existingProductOwner
+        })
+    }catch(error){
+        console.error(error);
+        res.send(500).send({error:"Server error. Please try again."});
+    }
+})
+
 module.exports = router;
