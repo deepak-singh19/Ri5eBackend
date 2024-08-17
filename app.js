@@ -12,6 +12,7 @@ const verifyRoute= require("./routers/verify")
 const verifyProductRoute= require("./routers/verify-product");
 
 //middlewares
+app.use(cors())
 app.use(express.json());
 
 // Connect to the database
