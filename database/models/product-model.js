@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const productOwnerSchema = new mongoose.Schema({
   companyName: {
     type: String,
-    required: true
+    // required: true
   },
   fullName: {
     type: String,

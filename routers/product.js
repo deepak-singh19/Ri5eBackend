@@ -9,7 +9,7 @@ const SALT = 10;
 // Product Owner Sign-up
 router.post("/sign-up", async (req, res) => {
   try {
-    const { companyName, fullName, email, password } = req.body;
+    const { fullName, email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, SALT);
     const existingProductOwner = await ProductOwner.findOne({ email });
@@ -20,7 +20,6 @@ router.post("/sign-up", async (req, res) => {
     }
 
     const newProductOwner = new ProductOwner({
-      companyName,
       fullName,
       email,
       password: hashedPassword,
