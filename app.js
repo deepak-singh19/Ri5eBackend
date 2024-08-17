@@ -25,6 +25,7 @@ const mentorsRoute = require("./routers/mentor");
 const productRoute = require("./routers/product");
 const verifyRoute = require("./routers/verify");
 const verifyProductRoute = require("./routers/verify-product");
+const messageRoute = require("./routers/message");
 
 //middlewares
 app.use(cors()); // Enable CORS
@@ -38,6 +39,7 @@ app.use("/mentor", mentorsRoute);
 app.use("/product", productRoute);
 app.use("/verify", verifyRoute);
 app.use("/verify-product", verifyProductRoute);
+app.use("/message", messageRoute);
 
 // Default route
 app.get('/', (req, res) => {
