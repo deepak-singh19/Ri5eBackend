@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ProductOwner = require("../database/models/product-owner-model");
+const ProductOwner = require("../database/models/product-model");
 const bcrypt = require('bcrypt');
 const { generateVerificationCode, sendVerificationEmail } = require("../lib/common");
 
