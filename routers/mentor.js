@@ -153,7 +153,7 @@ router.get("/mentor-profile/:mentorId",async(req,res)=>{
       const mentorId = req.params.mentorId;
       const existingMentor = await Mentor.findById(mentorId);
       if (!existingMentor) {
-    return res.status(404).send({ message: "Product Owner not found" });
+    return res.status(404).send({ message: "Mentor not found" });
       } 
       res.status(200).send({
           message:"Mentor",
