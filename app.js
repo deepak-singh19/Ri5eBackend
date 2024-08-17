@@ -44,9 +44,29 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
+let users=[];
+
 // Start listening for WebSocket connections
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
+
+  socket.on("addUser",(userId)=>{
+    users.push({userId, socketId:socket.id});
+    io.emit("users", users);
+  });
+
+  socket.on("sendMessage",({senderId, recieverId, message, conversationId})=>{
+    const reciever= users.find((user)=>user.userId===recieverId);
+    const sender= users.find((user)=>user.userId===senderId);
+    if(reciever){
+      io.to(reciever.socketId).to(sender.socketId).emit("getMessage",{senderId, message, recieverId, conversationId});
+    }
+  });
+
+  socket.on("disconnect",()=>{
+    users=users.filter((user)=>user.socketId!==socket.id);
+    io.emit("users", users);
+  });
 
   // Example: Listen for a custom event from the client
   socket.on('custom-event', (data) => {
