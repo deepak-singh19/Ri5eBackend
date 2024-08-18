@@ -7,6 +7,7 @@ const Product = require("../database/models/product-model");
 const Message = require("../database/models/message-model");
 const { default: mongoose } = require('mongoose');
 
+//done
 router.post("/conversation", async (req, res) => {
     try {
         // Corrected the request body access
@@ -34,6 +35,7 @@ router.post("/conversation", async (req, res) => {
     }
 });
 
+//done
 router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -43,7 +45,7 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.member.find((mem) => mem !== userId);
             const mentor = await Mentor.findById(recieverId);
-            return { mentor: { email: mentor.email, fullName: mentor.fullName }, conversationId: conv._id };
+            return { mentor: { email: mentor.email, fullName: mentor.fullName, recieverId:mentor._id }, conversationId: conv._id };
         }));
 
 
@@ -108,6 +110,8 @@ router.get("/product/message/:conversationId", async (req, res) => {
     }
 });
 
+
+//done
 router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -135,7 +139,7 @@ router.get("/product/conversation/:userId", async (req, res) => {
                 return null;
             }
 
-            return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
+            return { product: { email: product.email, fullName: product.fullName, recieverId:product._id }, conversationId: conv._id };
         }));
 
         const filteredConversationData = conversationUserData.filter(data => data !== null); // Filter out nulls
