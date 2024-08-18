@@ -12,6 +12,8 @@ router.post("/conversation",async(req,res)=>{
     try{
 
         const {senderId, recieverId}= req.body;
+        console.log(senderId, recieverId);
+        
         const existingConversation= await Conversation.findOne({member:[senderId,recieverId]});
         console.log(existingConversation);
         
