@@ -12,9 +12,9 @@ router.post("/conversation",async(req,res)=>{
     try{
 
         console.log(req);
-        const {senderId, recieverId}= req.body;
+        const {senderId, recieverId}= req.body.body;
         console.log(senderId, recieverId);
-        
+
         const existingConversation= await Conversation.findOne({member:[senderId,recieverId]});
         console.log(existingConversation);
         
