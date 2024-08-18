@@ -13,13 +13,16 @@ router.post("/conversation",async(req,res)=>{
 
         const {senderId, recieverId}= req.body;
         const existingConversation= await Conversation.findOne({member:[senderId,recieverId]});
-        if(existingConversation){
-            return res.status(409).send({message:"Conversation already exists"})        
-        }else{
+        console.log(existingConversation);
+        
+        if(!existingConversation){
+            
             const newConversation= new Conversation({member:[senderId,recieverId]});
             await Conversation.save();
             res.status(200).send({message:"Conversation created successfully"})
+                 
         }
+        return res.status(409).send({message:"Conversation already exists"})   
         // const newConversation= new Conversation({member:[senderId,recieverId]});
         // await Conversation.save();
         // res.status(200).send({message:"Conversation created successfully"})
