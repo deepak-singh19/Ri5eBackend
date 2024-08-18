@@ -14,9 +14,6 @@ const mentorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: String,
-  },
   phoneNumber: {
     type: String,
   },
@@ -33,9 +30,6 @@ const mentorSchema = new mongoose.Schema({
   companyAssociatedWith: {
     type: String,
   },
-  designation: {
-    type: String,
-  },
   keyAchievements: {
     type: [String], 
   },
@@ -50,9 +44,6 @@ const mentorSchema = new mongoose.Schema({
   },
   isVerified:{
     type:Boolean
-  },
-  address:{
-    type:String
   },
   designation:{
     type:String
