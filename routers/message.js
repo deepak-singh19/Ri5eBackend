@@ -45,7 +45,7 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.member.find((mem) => mem !== userId);
             const mentor = await Mentor.findById(recieverId);
-            return { mentor: { email: mentor.email, fullName: mentor.fullName, recieverId:mentor._id }, conversationId: conv._id };
+            return { details: { email: mentor.email, fullName: mentor.fullName, recieverId:mentor._id }, conversationId: conv._id };
         }));
 
 
@@ -57,6 +57,8 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
     }
 });
 
+
+//done
 router.post("/message", async (req, res) => {
     try {
         const { conversationId, senderId, message, recieverId = '' } = req.body;
@@ -86,7 +88,7 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
         const messages = await Message.find({ conversationId });
         const messageData = await Promise.all(messages.map(async (msg) => {
             const mentor = await Mentor.findById(msg.senderId);
-            return { mentor: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
+            return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
         }));
         res.status(200).send({ message: "All messages", messageData });
     } catch (error) {
@@ -101,7 +103,7 @@ router.get("/product/message/:conversationId", async (req, res) => {
         const messages = await Message.find({ conversationId });
         const messageData = await Promise.all(messages.map(async (msg) => {
             const product = await Product.findById(msg.senderId);
-            return { product: { senderId: product._id, fullName: product.fullName }, message: msg.message };
+            return { details: { senderId: product._id, fullName: product.fullName }, message: msg.message };
         }));
         res.status(200).send({ message: "All messages", messageData });
     } catch (error) {
@@ -139,7 +141,7 @@ router.get("/product/conversation/:userId", async (req, res) => {
                 return null;
             }
 
-            return { product: { email: product.email, fullName: product.fullName, recieverId:product._id }, conversationId: conv._id };
+            return { details: { email: product.email, fullName: product.fullName, recieverId:product._id }, conversationId: conv._id };
         }));
 
         const filteredConversationData = conversationUserData.filter(data => data !== null); // Filter out nulls
