@@ -68,15 +68,15 @@ router.post("/conversation", async (req, res) => {
 router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
-        console.log("params", userId);
+        // console.log("params", userId);
 
         const conversations = await Conversation.find({ member: { $in: [userId] } });
 
-        console.log("find conversation using user id", conversations);
+        // console.log("find conversation using user id", conversations);
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.member.find((mem) => mem.toString() !== userId);
-            console.log("receiverId", recieverId);
+            // console.log("receiverId", recieverId);
             if (!recieverId) {
                 return null;  // Return null if there's no valid receiver ID
             }
@@ -86,11 +86,12 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
                 return null;  // Return null if no product is found for the receiver ID
             }
 
-            console.log("product from receiver", product);
+            // console.log("product from receiver", product);
             return {
                 details: {
                     email: product.email,
-                    fullName: product.fullName
+                    fullName: product.fullName,
+                    recieverId: product._id,
                 },
                 conversationId: conv._id
             };
@@ -111,9 +112,6 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
 });
 
 
-
-
-
 //done
 router.post("/message", async (req, res) => {
     try {
@@ -130,7 +128,7 @@ router.post("/message", async (req, res) => {
             return res.status(200).send("Message sent successfully");
         }
 
-        const newMessage = new Message({ conversationId, senderId, message });
+        const newMessage = new Message({ conversationId, senderId, message, recieverId });
         await newMessage.save();
         return res.status(200).send("Message sent successfully");
     } catch (error) {
@@ -144,18 +142,18 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
         // console.log("Request", req);
         
         const conversationId = req.params.conversationId;
-        console.log(conversationId);
+        // console.log(conversationId);
         const messages = await Message.find({ conversationId });
-        console.log("Messages found:", messages);
+        // console.log("Messages found:", messages);
+        return res.status(200).send({ message: "All messages", messageData: messages });
         
-        
-        const messageData = await Promise.all(messages.map(async (msg) => {
-            const mentor = await Mentor.findById(msg.senderId);
-            console.log("Mentor found:", mentor);
+        // const messageData = await Promise.all(messages.map(async (msg) => {
+        //     const mentor = await Mentor.findById(msg.senderId);
+        //     console.log("Mentor found:", mentor);
             
-            return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
-        }));
-        res.status(200).send({ message: "All messages", messageData });
+        //     return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
+        // }));
+        // res.status(200).send({ message: "All messages", messageData });
     } catch (error) {
         console.log(error);
         return res.status(500).send({ error: "Server error. Please try again." });
@@ -166,18 +164,18 @@ router.get("/product/message/:conversationId", async (req, res) => {
     try {
         // console.log("Request", req);
         
-        console.log("conversationId", req.params.conversationId);
+        // console.log("conversationId", req.params.conversationId);
         const conversationId = req.params.conversationId;
         if(!conversationId){
             return res.status(400).send({ error: "Please provide conversationId" });
         }
 
         const messages = await Message.find({ conversationId });
-        console.log("Messages found:", messages);
+        // console.log("Messages found:", messages);
         
         const messageData = await Promise.all(messages.map(async (msg) => {
-            const product = await Mentor.findById(msg.senderId);
-            console.log("Product found:", product);
+            const product = await Product.findById(msg.senderId);
+            // console.log("Product found:", product);
             return { details: { senderId: product._id, fullName: product.fullName, message: msg.message }};
         }));
         res.status(200).send({ message: "All messages", messageData });
@@ -193,12 +191,12 @@ router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        console.log("User ID (string):", userId);
+        // console.log("User ID (string):", userId);
 
         // Find conversations where userId is a member (using string comparison)
         const conversations = await Conversation.find({ member: { $in: [userId] } });
 
-        console.log("Conversations found:", conversations);
+        // console.log("Conversations found:", conversations);
 
         if (conversations.length === 0) {
             return res.status(404).send({ message: "No conversations found for this user." });
@@ -207,7 +205,7 @@ router.get("/product/conversation/:userId", async (req, res) => {
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             // Find the other member in the conversation
             const recieverId = conv.member.find((mem) => mem.toString() !== userId);
-            console.log("RecieverId found:", recieverId);
+            // console.log("RecieverId found:", recieverId);
 
             // Fetch product by receiver ID
             const product = await Product.findById(recieverId);
