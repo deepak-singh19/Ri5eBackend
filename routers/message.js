@@ -12,7 +12,7 @@ router.post("/conversation", async (req, res) => {
         // Corrected the request body access
         // console.lo(req);
         const { senderId, recieverId } = req.body;
-        // console.log("ids from frontend ", senderId, recieverId);
+        // // console.log("ids from frontend ", senderId, recieverId);
 
         // Check if the conversation exists
         const existingConversation = await Conversation.findOne({ member: [senderId, recieverId] });
@@ -38,10 +38,10 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        const conversations = await Conversation.find({ members: { $in: [userId] } });
+        const conversations = await Conversation.find({ member: { $in: [userId] } });
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
-            const recieverId = conv.members.find((mem) => mem !== userId);
+            const recieverId = conv.member.find((mem) => mem !== userId);
             const mentor = await Mentor.findById(recieverId);
             return { mentor: { email: mentor.email, fullName: mentor.fullName }, conversationId: conv._id };
         }));
@@ -111,28 +111,42 @@ router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        // const userObjectId = new mongoose.Types.ObjectId(userId);
-        // console.log(userObjectId);
+        // Keep userId as a string to match the members stored as strings in the database
+        console.log("User ID (string):", userId);
 
+        // Find conversations where userId is a member (using string comparison)
         const conversations = await Conversation.find({ member: { $in: [userId] } });
 
-        console.log("find conversation using user id", conversations);
+        console.log("Conversations found:", conversations);
+
+        if (conversations.length === 0) {
+            return res.status(404).send({ message: "No conversations found for this user." });
+        }
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
-            const recieverId = conv.member.find((mem) => mem !== userId);
-            // const recieverObjectId = new mongoose.Types.ObjectId(recieverId);
-            console.log("reviever id", recieverId);
-            const product = await Product.findOne({ _id: new mongoose.Types.ObjectId(recieverId)});
-            console.log("product from receiver", product);
+            const recieverId = conv.member.find((mem) => mem !== userId); // Find the other user in the conversation
+            console.log("RecieverId found:", recieverId);
+
+            const product = await Product.findById(recieverId);
+            if (!product) {
+                console.log("No product found for recieverId:", recieverId);
+                return null;
+            }
+            // console.log("Product found:", product);
+
             return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
         }));
 
-        res.status(200).send({ message: "All conversations", conversationData: conversationUserData });
+        const filteredConversationData = conversationUserData.filter(data => data !== null); // Filter out nulls
+        res.status(200).send({ message: "All conversations", conversationData: filteredConversationData });
 
     } catch (error) {
-        console.log(error);
+        console.log("Error:", error);
         return res.status(500).send({ error: "Server error. Please try again." });
     }
 });
+
+
+
 
 module.exports = router;
