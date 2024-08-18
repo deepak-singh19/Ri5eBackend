@@ -35,46 +35,81 @@ router.post("/conversation", async (req, res) => {
     }
 });
 
-//done
+// not working
+// router.get("/mentor/conversation/:userId", async (req, res) => {
+//     try {
+//         const userId = req.params.userId;
+//         console.log("params", userId);
+//         // const userObjectId = new mongoose.Types.ObjectId(userId);
+//         // console.log(userObjectId);
+
+//         const conversations = await Conversation.find({ member: { $in: [userId] } });
+
+//         console.log("find conversation using user id", conversations);
+
+//         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
+//             const recieverId = conv.member.find((mem) => mem !== userId);
+//             // const recieverObjectId = new mongoose.Types.ObjectId(recieverId);
+//             console.log(recieverId);
+//             const product = await Product.findById(recieverId);
+//             console.log("product from receiver", product);
+//             return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
+//         }));
+
+//         res.status(200).send({ message: "All conversations", conversationData: conversationUserData });
+
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({ error: "Server error. Please try again." });
+//     }
+// })
+
+//working
 router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
+        console.log("params", userId);
 
-        // Find conversations where the user is a member
         const conversations = await Conversation.find({ member: { $in: [userId] } });
 
-        // Fetch the mentor details for each conversation
-        const conversationUserData = await Promise.all(conversations.map(async (conv) => {
-            const recieverId = conv.member.find((mem) => mem !== userId);
-            const mentor = await Mentor.findById(recieverId);
+        console.log("find conversation using user id", conversations);
 
-            if (mentor) {
-                return {
-                    details: {
-                        fullName: mentor.fullName,
-                        recieverId: mentor._id
-                    },
-                    conversationId: conv._id
-                };
-            } else {
-                console.log(`Mentor not found for recieverId: ${recieverId}`);
-                return {
-                    details: {
-                        fullName: "Unknown",
-                        recieverId: recieverId // return the recieverId even if no mentor found
-                    },
-                    conversationId: conv._id
-                };
+        const conversationUserData = await Promise.all(conversations.map(async (conv) => {
+            const recieverId = conv.member.find((mem) => mem.toString() !== userId);
+            console.log("receiverId", recieverId);
+            if (!recieverId) {
+                return null;  // Return null if there's no valid receiver ID
             }
+
+            const product = await Mentor.findById(recieverId);
+            if (!product) {
+                return null;  // Return null if no product is found for the receiver ID
+            }
+
+            console.log("product from receiver", product);
+            return {
+                details: {
+                    email: product.email,
+                    fullName: product.fullName
+                },
+                conversationId: conv._id
+            };
         }));
 
-        res.status(200).send({ message: "All conversations", conversationData: conversationUserData });
+        // Filter out any null values from the results
+        const filteredConversationData = conversationUserData.filter(data => data !== null);
+
+        res.status(200).send({
+            message: "All conversations",
+            conversationData: filteredConversationData
+        });
 
     } catch (error) {
-        console.error("Error in fetching conversations:", error);
+        console.log(error);
         return res.status(500).send({ error: "Server error. Please try again." });
     }
 });
+
 
 
 
@@ -83,7 +118,6 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
 router.post("/message", async (req, res) => {
     try {
         const { conversationId, senderId, message, recieverId = '' } = req.body;
-        console.log("Message body:", req.body);
         
         if (!senderId || !message) {
             return res.status(400).send({ error: "Please provide senderId and message" });
@@ -107,7 +141,7 @@ router.post("/message", async (req, res) => {
 
 router.get("/mentor/message/:conversationId", async (req, res) => {
     try {
-        console.log("Request", req);
+        // console.log("Request", req);
         
         const conversationId = req.params.conversationId;
         console.log(conversationId);
@@ -116,7 +150,7 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
         
         
         const messageData = await Promise.all(messages.map(async (msg) => {
-            const mentor = await Product.findById(msg.senderId);
+            const mentor = await Mentor.findById(msg.senderId);
             console.log("Mentor found:", mentor);
             
             return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
@@ -130,6 +164,8 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
 
 router.get("/product/message/:conversationId", async (req, res) => {
     try {
+        // console.log("Request", req);
+        
         console.log("conversationId", req.params.conversationId);
         const conversationId = req.params.conversationId;
         if(!conversationId){
@@ -142,7 +178,7 @@ router.get("/product/message/:conversationId", async (req, res) => {
         const messageData = await Promise.all(messages.map(async (msg) => {
             const product = await Mentor.findById(msg.senderId);
             console.log("Product found:", product);
-            return { details: { senderId: product._id, fullName: product.fullName }, message: msg.message };
+            return { details: { senderId: product._id, fullName: product.fullName, message: msg.message }};
         }));
         res.status(200).send({ message: "All messages", messageData });
     } catch (error) {
