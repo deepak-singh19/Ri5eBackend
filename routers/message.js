@@ -40,22 +40,43 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
+        // Find conversations where the user is a member
         const conversations = await Conversation.find({ member: { $in: [userId] } });
 
+        // Fetch the mentor details for each conversation
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.member.find((mem) => mem !== userId);
             const mentor = await Mentor.findById(recieverId);
-            return { details: { email: mentor.email, fullName: mentor.fullName, recieverId:mentor._id }, conversationId: conv._id };
+
+            if (mentor) {
+                return {
+                    details: {
+                        fullName: mentor.fullName,
+                        recieverId: mentor._id
+                    },
+                    conversationId: conv._id
+                };
+            } else {
+                console.log(`Mentor not found for recieverId: ${recieverId}`);
+                return {
+                    details: {
+                        fullName: "Unknown",
+                        recieverId: recieverId // return the recieverId even if no mentor found
+                    },
+                    conversationId: conv._id
+                };
+            }
         }));
 
-
-        res.status(200).send({ message: "All conversation", conversationData: conversationUserData });
+        res.status(200).send({ message: "All conversations", conversationData: conversationUserData });
 
     } catch (error) {
-        console.log(error);
+        console.error("Error in fetching conversations:", error);
         return res.status(500).send({ error: "Server error. Please try again." });
     }
 });
+
+
 
 
 //done
@@ -95,7 +116,7 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
         
         
         const messageData = await Promise.all(messages.map(async (msg) => {
-            const mentor = await Mentor.findById(msg.senderId);
+            const mentor = await Product.findById(msg.senderId);
             console.log("Mentor found:", mentor);
             
             return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
@@ -109,10 +130,18 @@ router.get("/mentor/message/:conversationId", async (req, res) => {
 
 router.get("/product/message/:conversationId", async (req, res) => {
     try {
+        console.log("conversationId", req.params.conversationId);
         const conversationId = req.params.conversationId;
+        if(!conversationId){
+            return res.status(400).send({ error: "Please provide conversationId" });
+        }
+
         const messages = await Message.find({ conversationId });
+        console.log("Messages found:", messages);
+        
         const messageData = await Promise.all(messages.map(async (msg) => {
-            const product = await Product.findById(msg.senderId);
+            const product = await Mentor.findById(msg.senderId);
+            console.log("Product found:", product);
             return { details: { senderId: product._id, fullName: product.fullName }, message: msg.message };
         }));
         res.status(200).send({ message: "All messages", messageData });
