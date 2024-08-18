@@ -38,10 +38,10 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        const conversations = await Conversation.find({ members: { $in: [userId] } });
+        const conversations = await Conversation.find({ member: { $in: [userId] } });
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
-            const recieverId = conv.members.find((mem) => mem !== userId);
+            const recieverId = conv.member.find((mem) => mem !== userId);
             const mentor = await Mentor.findById(recieverId);
             return { mentor: { email: mentor.email, fullName: mentor.fullName }, conversationId: conv._id };
         }));
