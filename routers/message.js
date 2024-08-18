@@ -110,11 +110,17 @@ router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
+        console.log(userId);
+
         const conversations = await Conversation.find({ members: { $in: [userId] } });
+
+        console.log(conversations);
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.members.find((mem) => mem !== userId);
+            console.log(recieverId);
             const product = await Product.findById(recieverId);
+            console.log(product);
             return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
         }));
 
