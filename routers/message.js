@@ -21,7 +21,7 @@ router.post("/conversation",async(req,res)=>{
         if(!existingConversation){
             
             const newConversation= new Conversation({member:[senderId,recieverId]});
-            await Conversation.save();
+            await newConversation.save();
             res.status(200).send({message:"Conversation created successfully"})
                  
         }
