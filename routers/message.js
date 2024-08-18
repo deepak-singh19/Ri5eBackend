@@ -111,33 +111,42 @@ router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
+        // Keep userId as a string to match the members stored as strings in the database
+        console.log("User ID (string):", userId);
 
-        // ---------------
-        // const conversations = await Conversation.find({ _id: (userId)})
+        // Find conversations where userId is a member (using string comparison)
+        const conversations = await Conversation.find({ member: { $in: [userId] } });
 
-        // ---------------
-        const userObjectId = new mongoose.Types.ObjectId(userId);
-        console.log(userObjectId);
+        console.log("Conversations found:", conversations);
 
-        const conversations = await Conversation.find({ member: { $in: [userObjectId] } });
-
-        console.log("find conversation using user id", conversations);
+        if (conversations.length === 0) {
+            return res.status(404).send({ message: "No conversations found for this user." });
+        }
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
-            const recieverId = conv.member.find((mem) => mem !== userId);
-            // const recieverObjectId = new mongoose.Types.ObjectId(recieverId);
-            // console.log(recieverObjectId);
-            const product = await Product.findOne({_id: recieverId});
-            console.log("product from receiver", product);
+            const recieverId = conv.member.find((mem) => mem !== userId); // Find the other user in the conversation
+            console.log("RecieverId found:", recieverId);
+
+            const product = await Product.findById(recieverId);
+            if (!product) {
+                console.log("No product found for recieverId:", recieverId);
+                return null;
+            }
+            // console.log("Product found:", product);
+
             return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
         }));
 
-        res.status(200).send({ message: "All conversations", conversationData: conversationUserData });
+        const filteredConversationData = conversationUserData.filter(data => data !== null); // Filter out nulls
+        res.status(200).send({ message: "All conversations", conversationData: filteredConversationData });
 
     } catch (error) {
-        console.log(error);
+        console.log("Error:", error);
         return res.status(500).send({ error: "Server error. Please try again." });
     }
 });
+
+
+
 
 module.exports = router;
