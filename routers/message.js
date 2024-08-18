@@ -9,7 +9,8 @@ const Message = require("../database/models/message-model");
 router.post("/conversation", async (req, res) => {
     try {
         // Corrected the request body access
-        const { senderId, recieverId } = req.body.body;
+        console(req);
+        const { senderId, recieverId } = req.body;
         console.log(senderId, recieverId);
 
         // Check if the conversation exists
