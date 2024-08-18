@@ -26,7 +26,7 @@ const productRoute = require("./routers/product");
 const verifyRoute = require("./routers/verify");
 const verifyProductRoute = require("./routers/verify-product");
 const messageRoute = require("./routers/message");
-
+const taskRoute = require("./routers/task");
 //middlewares
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON request bodies
@@ -40,6 +40,7 @@ app.use("/product", productRoute);
 app.use("/verify", verifyRoute);
 app.use("/verify-product", verifyProductRoute);
 app.use("/message", messageRoute);
+app.use("/task", taskRoute);
 
 // Default route
 app.get('/', (req, res) => {
@@ -69,7 +70,7 @@ io.on('connection', (socket) => {
     users=users.filter((user)=>user.socketId!==socket.id);
     io.emit("users", users);
   });
-  
+
   // Handle user disconnection
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
