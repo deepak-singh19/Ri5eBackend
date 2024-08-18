@@ -11,6 +11,7 @@ const Message= require("../database/models/message-model");
 router.post("/conversation",async(req,res)=>{
     try{
 
+        console.log(req);
         const {senderId, recieverId}= req.body;
         console.log(senderId, recieverId);
         
