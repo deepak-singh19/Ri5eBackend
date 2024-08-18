@@ -55,14 +55,20 @@ io.on('connection', (socket) => {
 
   socket.on("addUser",(userId)=>{
     users.push({userId, socketId:socket.id});
+    // console.log(users);
+    
     io.emit("users", users);
   });
 
   socket.on("sendMessage",({senderId, recieverId, message, conversationId})=>{
+    // console.log({senderId, recieverId, message, conversationId});
+    
     const reciever= users.find((user)=>user.userId===recieverId);
     const sender= users.find((user)=>user.userId===senderId);
+    // console.log(reciever, sender);
+    
     if(reciever){
-      io.to(reciever.socketId).to(sender.socketId).emit("getMessage",{senderId, message, recieverId, conversationId});
+      socket.to(reciever.socketId).to(sender.socketId).emit("getMessage",{senderId, message, recieverId, conversationId});
     }
   });
 
