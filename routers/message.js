@@ -9,7 +9,7 @@ const Message = require("../database/models/message-model");
 router.post("/conversation", async (req, res) => {
     try {
         // Corrected the request body access
-        console(req);
+        // console.lo(req);
         const { senderId, recieverId } = req.body;
         console.log(senderId, recieverId);
 
