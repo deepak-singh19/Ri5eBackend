@@ -69,14 +69,7 @@ io.on('connection', (socket) => {
     users=users.filter((user)=>user.socketId!==socket.id);
     io.emit("users", users);
   });
-
-  // Example: Listen for a custom event from the client
-  socket.on('custom-event', (data) => {
-    console.log('Received custom event data:', data);
-    // Emit response back to all connected clients
-    io.emit('server-response', { message: 'Hello from server' });
-  });
-
+  
   // Handle user disconnection
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);

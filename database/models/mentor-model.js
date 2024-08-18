@@ -19,7 +19,6 @@ const mentorSchema = new mongoose.Schema({
   },
   areaOfExpertise: {
     type: [String], // Array of strings for areas of expertise
-  //  required: true,
   },
   industryExperience: {
     type: [String], // Array of strings for industry experience
@@ -39,15 +38,15 @@ const mentorSchema = new mongoose.Schema({
   durationOfMentorship: {
     type: String, 
   },
-  verificationCode:{
-    type:String
+  verificationCode: {
+    type: String,
   },
-  isVerified:{
-    type:Boolean
+  isVerified: {
+    type: Boolean,
   },
-  designation:{
-    type:String
-  } 
+  address: {
+    type: String,
+  },
 });
 
 const Mentor = mongoose.model('Mentor', mentorSchema);

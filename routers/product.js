@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductOwner = require("../database/models/product-model");
+const Mentor = require("../database/models/mentor-model");
 const bcrypt = require('bcrypt');
 const { generateVerificationCode, sendVerificationEmail } = require("../lib/common");
 
@@ -162,5 +163,41 @@ router.get("/product-profile/:productOwnerId",async(req,res)=>{
         res.send(500).send({error:"Server error. Please try again."});
     }
 })
+
+// Mentor Matching API
+router.get('/match/:productOwnerId', async (req, res) => {
+  try {
+    const { productOwnerId } = req.params;
+
+    // Fetch the product owner based on the ID
+    const productOwner = await ProductOwner.findById(productOwnerId);
+    if (!productOwner) {
+      return res.status(404).send({ message: 'Product Owner not found' });
+    }
+
+    const productOwnerSkills = productOwner.skills;
+
+    // Fetch all mentors
+    const mentors = await Mentor.find({});
+
+    // Filter mentors based on a single matching skill/expertise
+    const matchedMentors = mentors.filter(mentor => {
+      const mentorExpertise = mentor.areaOfExpertise;
+
+      // Check if any element in the mentor's expertise matches the product owner's skills
+      return mentorExpertise.some(expertise => productOwnerSkills.includes(expertise));
+    });
+
+    res.status(200).send({
+      message: 'Mentor matching successful',
+      bestMatches: matchedMentors, // Send back matched mentors
+      remainingMentors: mentors.filter(mentor => !matchedMentors.includes(mentor)) // Send non-matching mentors
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ error: 'Server error during mentor matching' });
+  }
+});
 
 module.exports = router;
