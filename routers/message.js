@@ -111,23 +111,18 @@ router.get("/product/conversation/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
+        // const userObjectId = new mongoose.Types.ObjectId(userId);
+        // console.log(userObjectId);
 
-        // ---------------
-        // const conversations = await Conversation.find({ _id: (userId)})
-
-        // ---------------
-        const userObjectId = new mongoose.Types.ObjectId(userId);
-        console.log(userObjectId);
-
-        const conversations = await Conversation.find({ member: { $in: [userObjectId] } });
+        const conversations = await Conversation.find({ member: { $in: [userId] } });
 
         console.log("find conversation using user id", conversations);
 
         const conversationUserData = await Promise.all(conversations.map(async (conv) => {
             const recieverId = conv.member.find((mem) => mem !== userId);
             // const recieverObjectId = new mongoose.Types.ObjectId(recieverId);
-            // console.log(recieverObjectId);
-            const product = await Product.findOne({_id: recieverId});
+            console.log("reviever id", recieverId);
+            const product = await Product.findOne({ _id: new mongoose.Types.ObjectId(recieverId)});
             console.log("product from receiver", product);
             return { product: { email: product.email, fullName: product.fullName }, conversationId: conv._id };
         }));
