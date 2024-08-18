@@ -60,6 +60,8 @@ router.get("/mentor/conversation/:userId", async (req, res) => {
 router.post("/message", async (req, res) => {
     try {
         const { conversationId, senderId, message, recieverId = '' } = req.body;
+        console.log("Message body:", req.body);
+        
         if (!senderId || !message) {
             return res.status(400).send({ error: "Please provide senderId and message" });
         }

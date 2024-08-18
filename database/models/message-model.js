@@ -4,7 +4,7 @@ const messageSchema = new mongoose.Schema({
   conversationId: {
     type: String,
   },
-  sederId:{
+  senderId:{
     type:String,
   },
   message:{
