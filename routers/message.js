@@ -11,7 +11,7 @@ router.post("/conversation", async (req, res) => {
         // Corrected the request body access
         // console.lo(req);
         const { senderId, recieverId } = req.body;
-        console.log(senderId, recieverId);
+        // console.log(senderId, recieverId);
 
         // Check if the conversation exists
         const existingConversation = await Conversation.findOne({ members: [senderId, recieverId] });
