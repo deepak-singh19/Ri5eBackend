@@ -86,10 +86,18 @@ router.post("/message", async (req, res) => {
 
 router.get("/mentor/message/:conversationId", async (req, res) => {
     try {
+        console.log("Request", req);
+        
         const conversationId = req.params.conversationId;
+        console.log(conversationId);
         const messages = await Message.find({ conversationId });
+        console.log("Messages found:", messages);
+        
+        
         const messageData = await Promise.all(messages.map(async (msg) => {
             const mentor = await Mentor.findById(msg.senderId);
+            console.log("Mentor found:", mentor);
+            
             return { details: { senderId: mentor._id, message: msg.message, fullName: mentor.fullName } };
         }));
         res.status(200).send({ message: "All messages", messageData });
